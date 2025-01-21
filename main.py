@@ -22,7 +22,7 @@ def wait_for_next_10_minute_interval():
         next_interval = (current_time + timedelta(minutes=(10 - minutes_past))).replace(second=0, microsecond=0)
 
     # Wait until the next 10-minute mark
-    wait_time = (next_interval - current_time).total_seconds()
+    wait_time = ((next_interval - current_time).total_seconds())+20
     logger.info(f"Waiting for {wait_time} seconds to reach the next 10-minute interval... i.e {next_interval}")
     time.sleep(wait_time)
 
