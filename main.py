@@ -26,11 +26,11 @@ def wait_for_next_10_minute_interval():
     logger.info(f"Waiting for {wait_time} seconds to reach the next 10-minute interval... i.e {next_interval}")
     time.sleep(wait_time)
 
-
-def main():
+@celery_app.task
+def process_all_urls():
     # wait_for_next_10_minute_interval()
     
-    # URL of the YouTube live stream
+    # # URL of the YouTube live stream
     STREAM_URL = "https://www.youtube.com/watch?v=X5-X5AeJbAE"
 
     # # Base output directory
@@ -53,11 +53,10 @@ def main():
     
     while True:
         yt_handler=YoutubeHandler(STREAM_URL,BASE_OUTPUT_DIR)
-        img_path,capture_time=yt_handler.capture_screenshot()
         img_handler=ImageHandler(img_path)
         maker_note=img_handler.create_encoded_maker_note(
             device_id=LUKLA_CONSTANTS["device_id"],
-            devicecode=LUKLA_CONSTANTS["devicecode"],
+            devicecode=LUKLA_CONSTANTS["devicecode"],      
             album_code=LUKLA_CONSTANTS["album_code"],
             latitude=LUKLA_CONSTANTS["latitude"],
             longitude=LUKLA_CONSTANTS["longitude"],
@@ -66,9 +65,9 @@ def main():
             datetime_taken=capture_time,      
         )
         file_name=img_handler.add_metadata_and_save(maker_note,firstangle=LUKLA_CONSTANTS['firstAngle'],lastangle=LUKLA_CONSTANTS['lastAngle'])
-        # img_handler.upload_to_ftp(file_to_upload=file_name)
+        img_handler.upload_to_ftp(file_to_upload=file_name)
         # Wait for 10 minutes before capturing the next screenshot
         time.sleep(300)  # 5 minutes
         
 if __name__ == "__main__":
-    main()
+    process_all_urls()
