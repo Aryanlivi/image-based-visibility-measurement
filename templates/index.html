@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>URL Processor</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+            padding: 20px;
+        }
+        input, button {
+            padding: 10px;
+            margin: 10px;
+        }
+        .message {
+            margin: 10px 0;
+            color: green;
+        }
+    </style>
+</head>
+<body>
+    <h1>YouTube URL Processor</h1>
+
+    <div>
+        <label for="url">Enter YouTube URL: </label>
+        <input type="url" id="url" placeholder="Enter YouTube URL" required>
+        <input type="text" id="stream-name" placeholder="Enter Stream Name" required>
+    </div>
+
+    <button id="add-url-btn">Add URL</button>
+    <button id="remove-url-btn">Remove URL</button>
+    <button id="start-processing-btn">Start Processing</button>
+
+    <div id="response-message" class="message"></div>
+
+    <script>
+        const addUrlButton = document.getElementById("add-url-btn");
+        const removeUrlButton = document.getElementById("remove-url-btn");
+        const startProcessingButton = document.getElementById("start-processing-btn");
+        const responseMessage = document.getElementById("response-message");
+        
+        const API_BASE_URL = "/"; // Flask backend URL (relative path)
+
+        function showMessage(message, success=true) {
+            responseMessage.style.color = success ? "green" : "red";
+            responseMessage.textContent = message;
+        }
+
+        addUrlButton.addEventListener("click", async () => {
+            const url = document.getElementById("url").value;
+            if (!url) {
+                showMessage("URL is required!", false);
+                return;
+            }
+            
+            const response = await fetch(`${API_BASE_URL}add-url`, {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ url: url })
+            });
+
+            const result = await response.json();
+            showMessage(result.message, response.ok);
+        });
+
+        removeUrlButton.addEventListener("click", async () => {
+            const url = document.getElementById("url").value;
+            if (!url) {
+                showMessage("URL is required!", false);
+                return;
+            }
+
+            const response = await fetch(`${API_BASE_URL}remove-url`, {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ url: url })
+            });
+
+            const result = await response.json();
+            showMessage(result.message, response.ok);
+        });
+
+        startProcessingButton.addEventListener("click", async () => {
+            const stream_name = document.getElementById("stream-name").value;
+            const response = await fetch(`${API_BASE_URL}start-processing`, {
+                method: "POST",
+                headers: { "Content-Type": "application/json"},
+                body: JSON.stringify({ stream_name: stream_name })
+            });
+
+            const result = await response.json();
+            showMessage(result.message, response.ok);
+        });
+    </script>
+</body>
+</html>

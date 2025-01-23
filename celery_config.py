@@ -12,8 +12,6 @@ celery_app = Celery(
     # backend=f'redis://{host}:{port}/0'  # For result storage (optional)
 )
 
-
-
 # Set Celery configuration
 celery_app.conf.update(
     task_serializer="json",

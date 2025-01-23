@@ -1,10 +1,10 @@
 import redis
+from dotenv import load_dotenv
+import os 
+load_dotenv()
+# Redis client for managing URLs
+redis_client = redis.StrictRedis(host=os.getenv('redis_host'), port=os.getenv('redis_port'), decode_responses=True)
+STREAM_URLS_KEY = os.getenv('STREAM_URLS_KEY')  # Key to store URLs in Redis
 
-redis_client =redis.StrictRedis(host='localhost', port=6379, db=0)
-
-def add_url_to_queue(url):
-    redis_client.rpush('url_queue', url)
-    print(redis_client)
-    
-
-add_url_to_queue("https://www.youtube.com/watch?v=X5-X5AeJbAE")  
+def get_redis_client():
+    return redis_client
