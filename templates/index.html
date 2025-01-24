@@ -4,38 +4,74 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>URL Manager</title>
-    <!-- Updated path to styles.css -->
     <link rel="stylesheet" href="{{ url_for('static', filename='styles/style.css') }}">
 </head>
 <body>
-    <div class="container">
-        <h1>URL Manager</h1>
-
-        <div class="form-group">
-            <label for="stream_name">Stream Name:</label>
-            <input type="text" id="stream_name" placeholder="Enter stream name">
+    <div class="main-container">
+        <!-- Main content -->
+        <div class="container">
+            <h1>URL Manager</h1>
+            <div class="form-group">
+                <label for="stream_name">Stream Name:</label>
+                <input type="text" id="stream_name" placeholder="Enter stream name">
+            </div>
+            <div class="form-group">
+                <label for="url">URL:</label>
+                <input type="text" id="url" placeholder="Enter URL">
+            </div>
+            <div class="form-group">
+                <label for="device_id">Device ID:</label>
+                <input type="text" id="device_id" placeholder="Enter device ID">
+            </div>
+            <div class="form-group">
+                <label for="devicecode">Device Code:</label>
+                <input type="text" id="devicecode" placeholder="Enter device code">
+            </div>
+            <div class="form-group">
+                <label for="album_code">Album Code:</label>
+                <input type="text" id="album_code" placeholder="Enter album code">
+            </div>
+            <div class="form-group">
+                <label for="latitude">Latitude:</label>
+                <input type="text" id="latitude" placeholder="Enter latitude">
+            </div>
+            <div class="form-group">
+                <label for="longitude">Longitude:</label>
+                <input type="text" id="longitude" placeholder="Enter longitude">
+            </div>
+            <div class="form-group">
+                <label for="altitude">Altitude:</label>
+                <input type="text" id="altitude" placeholder="Enter altitude">
+            </div>
+            <div class="form-group">
+                <label for="imageowner">Image Owner:</label>
+                <input type="text" id="imageowner" placeholder="Enter image owner">
+            </div>
+            <div class="form-group">
+                <label for="firstAngle">First Angle:</label>
+                <input type="text" id="firstAngle" placeholder="Enter first angle">
+            </div>
+            <div class="form-group">
+                <label for="lastAngle">Last Angle:</label>
+                <input type="text" id="lastAngle" placeholder="Enter last angle">
+            </div>
+            <div class="button-group">
+                <button id="add-url-btn">Add URL</button>
+                <button id="remove-url-btn">Remove URL</button>
+                <button id="start-processing-btn">Start Processing</button>
+                <button id="view-urls-btn">View URLs</button>
+            </div>
+            <div id="response-message" class="message" style="display: none;"></div>
         </div>
 
-        <div class="form-group">
-            <label for="url">URL:</label>
-            <input type="text" id="url" placeholder="Enter URL">
+        <!-- URLs List -->
+        <div class="urls-container">
+            <h2>Current URLs</h2>
+            <ul id="urls" class="list-group">
+                <!-- URLs will be dynamically populated here -->
+            </ul>
         </div>
-
-        <div class="button-group">
-            <button id="add-url-btn">Add URL</button>
-            <button id="remove-url-btn">Remove URL</button>
-            <button id="start-processing-btn">Start Processing</button>
-            <button id="view-urls-btn">View URLs</button>
-        </div>
-
-        <div id="response-message" class="message" style="display: none;"></div>
-
-        <h2>Current URLs</h2>
-        <ul id="urls" class="list-group">
-            <!-- URLs will be dynamically populated here -->
-        </ul>
     </div>
-
     <!-- Updated path to script.js -->
     <script src="{{ url_for('static', filename='js/script.js') }}"></script>
 </body>

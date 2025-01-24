@@ -85,3 +85,27 @@ button:hover {
 .button-group {
     text-align: center;
 }
+
+
+ /* Additional styles for layout */
+ .main-container {
+    display: flex;
+    justify-content: space-between;
+    gap: 20px;
+    align-items: flex-start;
+    max-width: 1200px;
+    margin: 50px auto;
+}
+
+.urls-container {
+    width: 35%;
+    background: #fff;
+    padding: 20px;
+    border-radius: 8px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+.urls-container h2 {
+    margin-top: 0;
+    text-align: center;
+}
