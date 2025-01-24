@@ -1,3 +1,6 @@
 celery -A tasks worker --pool=solo --loglevel=info                                      
 
 celery -A tasks worker --loglevel=info --concurrency=4
+
+
+change redis.conf

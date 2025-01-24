@@ -12,6 +12,22 @@ redis_client=get_redis_client()
 def index():
     return render_template("index.html")
 
+
+@app.route("/get-urls", methods=["GET"])
+def get_urls():
+    """
+    Endpoint to retrieve all URLs from the Redis queue.
+    """
+    try:
+        # Retrieve all URLs stored in Redis under STREAM_URLS_KEY
+        urls = redis_client.hgetall(STREAM_URLS_KEY)
+        
+        
+        return jsonify(urls), 200
+    except Exception as e:
+        logger.error(f"Error in /get-urls: {e}")
+        return jsonify({"message": "An error occurred while fetching URLs."}), 500
+
 @app.route("/add-url", methods=["POST"])
 def add_url():
     """
@@ -26,17 +42,19 @@ def add_url():
         return jsonify({"message": f"URL {url} added successfully!"}), 201
     return jsonify({"message": "URL is required!"}), 400
 
+
 @app.route("/remove-url", methods=["POST"])
 def remove_url():
     """
-    Endpoint to remove a URL from the Redis queue.
+    Endpoint to remove a URL from the Redis hash.
     """
     data = request.get_json()
-    url = data.get("url")
-    if url:
-        redis_client.lrem(STREAM_URLS_KEY, 0, url)
-        return jsonify({"message": f"URL {url} removed successfully!"}), 200
-    return jsonify({"message": "URL is required!"}), 400
+    stream_name = data.get("stream_name")
+    if stream_name:
+        # Remove the field from the Redis hash
+        redis_client.hdel(STREAM_URLS_KEY, stream_name)
+        return jsonify({"message": f"Stream {stream_name} removed successfully!"}), 200
+    return jsonify({"message": "stream_name is required!"}), 400
 
 @app.route("/start-processing", methods=["POST"])
 def start_processing():
@@ -44,10 +62,20 @@ def start_processing():
     Start the Celery task to process URLs.
     """
     try:
-        # -----FOR LUKLA----------
+        # data=request.get_json()
+        # device_id=data['device_id']
+        # devicecode=data['devicecode']
+        # album_code=data['album_code']
+        # latitude=data['latitude']
+        # longitude=data['longitude']
+        # altitude=data['altitude']
+        # imageowner=data['imageowner']
+        # firstAngle=data['firstAngle']
+        # lastAngle=data['lastAngle']
+        # # -----FOR LUKLA----------
         LUKLA_CONSTANTS = {
             "device_id": 0,  # pick a random id
-            "devicecode": "yt_1",
+            "devicecode": "yt_1",    
             "album_code": "album1",
             "latitude": 27.687162,
             "longitude": 86.732396,
