@@ -54,11 +54,15 @@
                 showMessage("URL is required!", false);
                 return;
             }
-            
+            const stream_name = document.getElementById("stream-name").value;
+            if(!stream_name){
+                showMessage("Stream name is required",false);
+                return;
+            }
             const response = await fetch(`${API_BASE_URL}add-url`, {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({ url: url })
+                body: JSON.stringify({ url: url,stream_name:stream_name })
             });
 
             const result = await response.json();
@@ -83,11 +87,10 @@
         });
 
         startProcessingButton.addEventListener("click", async () => {
-            const stream_name = document.getElementById("stream-name").value;
+            
             const response = await fetch(`${API_BASE_URL}start-processing`, {
                 method: "POST",
-                headers: { "Content-Type": "application/json"},
-                body: JSON.stringify({ stream_name: stream_name })
+                headers: { "Content-Type": "application/json"}
             });
 
             const result = await response.json();

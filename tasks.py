@@ -34,7 +34,7 @@ def wait_for_next_10_minute_interval():
     time.sleep(wait_time)
 
 @celery_app.task
-def process_all_urls(BASE_OUTPUT_DIR,LUKLA_CONSTANTS):
+def process_all_urls(LUKLA_CONSTANTS):
     """
     Celery task to process all URLs from Redis and take screenshots every 10 minutes.
     """
@@ -42,18 +42,21 @@ def process_all_urls(BASE_OUTPUT_DIR,LUKLA_CONSTANTS):
         while True:
             # Wait for the next 10-minute interval to always start capturing from the 10 min interval gap
             # wait_for_next_10_minute_interval()
-            redis_client=get_redis_client()
-            # Get all URLs from Redis
-            urls = redis_client.lrange(STREAM_URLS_KEY, 0, -1)
-            logger.info(urls)
-            if not urls:
-                logger.info("No URLs to process. Waiting for the next interval...")
+            redis_client = get_redis_client()
+
+            # Get all stream names and URLs from the Redis hash
+            streams = redis_client.hgetall(os.getenv('STREAM_URLS_KEY'))  # Retrieve all key-value pairs from the hash
+            logger.info(streams)
+            if not streams:
+                logger.info("No streams to process. Waiting for the next interval...")
                 continue
 
-            # Process each URL
-            for url in urls:
+
+            # Process each stream
+            for stream_name, url in streams.items():
                 try:
                     logger.info(f"Processing URL: {url}")
+                    BASE_OUTPUT_DIR = f"./screenshots/"+stream_name
                     yt_handler = YoutubeHandler(url, BASE_OUTPUT_DIR)            
                     img_path, capture_time = yt_handler.capture_screenshot()
 
@@ -78,9 +81,8 @@ def process_all_urls(BASE_OUTPUT_DIR,LUKLA_CONSTANTS):
                     # img_handler.upload_to_ftp(file_to_upload=file_name)
                     logger.info(f"BASE:{BASE_OUTPUT_DIR}")
                     logger.info(f"Successfully processed URL: {url}")
-                    time.sleep(600)#wait 10 min
                 except Exception as e:
                     logger.error(f"Error processing URL {url}: {e}")
-
+            time.sleep(60*2)#wait 10 min
     except Exception as e:
-        logger.error(f"Critical error in processing task: {e}")
+        logger.error(f"Critical error in processing task: {e}")    
