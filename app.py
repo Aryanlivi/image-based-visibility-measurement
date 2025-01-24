@@ -4,7 +4,8 @@ from redis_setup import *
 import logging
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
-app = Flask(__name__)
+app = Flask(__name__, static_url_path='/static', static_folder='static')
+
 STREAM_URLS_KEY=os.getenv('STREAM_URLS_KEY')
 redis_client=get_redis_client()
 

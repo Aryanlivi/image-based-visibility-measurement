@@ -1,0 +1,212 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>URL Manager</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f4f4f9;
+            color: #333;
+        }
+
+        .container {
+            max-width: 600px;
+            margin: 50px auto;
+            background: #fff;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
+
+        h1 {
+            text-align: center;
+            color: #444;
+        }
+
+        .form-group {
+            margin-bottom: 15px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: bold;
+        }
+
+        input[type="text"] {
+            width: 100%;
+            padding: 8px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            box-sizing: border-box;
+        }
+
+        button {
+            background-color: #5cb85c;
+            color: white;
+            padding: 10px 15px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            margin-right: 5px;
+        }
+
+        button:hover {
+            background-color: #4cae4c;
+        }
+
+        .message {
+            margin-top: 10px;
+            padding: 10px;
+            border-radius: 4px;
+            text-align: center;
+        }
+
+        .message.success {
+            background-color: #dff0d8;
+            color: #3c763d;
+        }
+
+        .message.error {
+            background-color: #f2dede;
+            color: #a94442;
+        }
+
+        .list-group {
+            list-style: none;
+            padding: 0;
+        }
+
+        .list-group-item {
+            padding: 10px;
+            background: #f9f9f9;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            margin-bottom: 5px;
+        }
+
+        .button-group {
+            text-align: center;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>URL Manager</h1>
+
+        <div class="form-group">
+            <label for="stream_name">Stream Name:</label>
+            <input type="text" id="stream_name" placeholder="Enter stream name">
+        </div>
+
+        <div class="form-group">
+            <label for="url">URL:</label>
+            <input type="text" id="url" placeholder="Enter URL">
+        </div>
+
+        <div class="button-group">
+            <button id="add-url-btn">Add URL</button>
+            <button id="remove-url-btn">Remove URL</button>
+            <button id="start-processing-btn">Start Processing</button>
+            <button id="view-urls-btn">View URLs</button>
+        </div>
+
+        <div id="response-message" class="message" style="display: none;"></div>
+
+        <h2>Current URLs</h2>
+        <ul id="urls" class="list-group">
+            <!-- URLs will be dynamically populated here -->
+        </ul>
+    </div>
+
+    <script>
+        const addUrlButton = document.getElementById("add-url-btn");
+const removeUrlButton = document.getElementById("remove-url-btn");
+const startProcessingButton = document.getElementById("start-processing-btn");
+const viewUrlsButton = document.getElementById("view-urls-btn");
+const responseMessage = document.getElementById("response-message");
+const urlsList = document.getElementById("urls");
+
+const API_BASE_URL = "/"; // Flask backend URL (relative path)
+
+function showMessage(message, success=true) {
+    responseMessage.className = 'message ' + (success ? 'success' : 'error');
+    responseMessage.textContent = message;
+}
+
+// Fetch current URLs from Redis
+async function fetchUrls() {
+    const response = await fetch(`${API_BASE_URL}get-urls`);
+    const data = await response.json();
+    urlsList.innerHTML = '';  // Clear the current list
+    if (Object.keys(data).length === 0) {
+        urlsList.innerHTML = '<li class="list-group-item">No URLs in the queue.</li>';
+    } else {
+        for (const streamName in data) {
+            const url = data[streamName];
+            const listItem = document.createElement('li');
+            listItem.classList.add('list-group-item');
+            listItem.textContent = `${streamName}: ${url}`;
+            urlsList.appendChild(listItem);
+        }
+    }
+}
+
+addUrlButton.addEventListener("click", async () => {
+    const url = document.getElementById("url").value;
+    const stream_name = document.getElementById("stream_name").value;
+    if (!url || !stream_name) {
+        showMessage("URL and Stream name are required!", false);
+        return;
+    }
+
+    const response = await fetch(`${API_BASE_URL}add-url`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ url, stream_name })
+    });
+
+    const result = await response.json();
+    showMessage(result.message, response.ok);
+    fetchUrls();  // Update the URL list after adding a new one
+});
+
+removeUrlButton.addEventListener("click", async () => {
+    const stream_name = document.getElementById("stream_name").value;
+    if (!stream_name) {
+        showMessage("Stream name is required!", false);
+        return;
+    }
+
+    const response = await fetch(`${API_BASE_URL}remove-url`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ stream_name })
+    });
+
+    const result = await response.json();
+    showMessage(result.message, response.ok);
+    fetchUrls();  // Update the URL list after removing one
+});
+
+startProcessingButton.addEventListener("click", async () => {
+    const response = await fetch(`${API_BASE_URL}start-processing`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" }
+    });
+
+    const result = await response.json();
+    showMessage(result.message, response.ok);
+});
+
+viewUrlsButton.addEventListener("click", fetchUrls);  // Button to fetch and display current URLs
+
+// Initial fetch to display the current URLs when the page loads
+window.onload = fetchUrls;
+    </script>
+</body>
+</html>
