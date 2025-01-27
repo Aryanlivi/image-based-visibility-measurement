@@ -9,59 +9,56 @@
 <body>
     <div class="main-container">
         <!-- Main content -->
-        <div class="container">
-            <h1>URL Manager</h1>
+        <div class="container">  
+            
             <div class="form-group">
                 <label for="stream_name">Stream Name:</label>
-                <input type="text" id="stream_name" placeholder="Enter stream name">
+                <input type="text" id="stream_name" placeholder="Enter stream name" required>
             </div>
             <div class="form-group">
                 <label for="url">URL:</label>
-                <input type="text" id="url" placeholder="Enter URL">
+                <input type="url" id="url" placeholder="Enter URL" required>
             </div>
             <div class="form-group">
                 <label for="device_id">Device ID:</label>
-                <input type="text" id="device_id" placeholder="Enter device ID">
+                <input type="text" id="device_id" placeholder="Enter device ID" required>
             </div>
             <div class="form-group">
                 <label for="devicecode">Device Code:</label>
-                <input type="text" id="devicecode" placeholder="Enter device code">
+                <input type="text" id="devicecode" placeholder="Enter device code" required>
             </div>
             <div class="form-group">
                 <label for="album_code">Album Code:</label>
-                <input type="text" id="album_code" placeholder="Enter album code">
+                <input type="text" id="album_code" placeholder="Enter album code" required>
             </div>
             <div class="form-group">
                 <label for="latitude">Latitude:</label>
-                <input type="text" id="latitude" placeholder="Enter latitude">
+                <input type="number" id="latitude" placeholder="Enter latitude" required>
             </div>
             <div class="form-group">
                 <label for="longitude">Longitude:</label>
-                <input type="text" id="longitude" placeholder="Enter longitude">
+                <input type="number" id="longitude" placeholder="Enter longitude" required>
             </div>
             <div class="form-group">
                 <label for="altitude">Altitude:</label>
-                <input type="text" id="altitude" placeholder="Enter altitude">
+                <input type="number" id="altitude" placeholder="Enter altitude"  required>
             </div>
             <div class="form-group">
                 <label for="imageowner">Image Owner:</label>
-                <input type="text" id="imageowner" placeholder="Enter image owner">
+                <input type="text" id="imageowner" placeholder="Enter image owner" required>
             </div>
             <div class="form-group">
                 <label for="firstAngle">First Angle:</label>
-                <input type="text" id="firstAngle" placeholder="Enter first angle">
+                <input type="number" id="firstAngle" placeholder="Enter first angle" required>
             </div>
             <div class="form-group">
                 <label for="lastAngle">Last Angle:</label>
-                <input type="text" id="lastAngle" placeholder="Enter last angle">
+                <input type="number" id="lastAngle" placeholder="Enter last angle" required>
             </div>
             <div class="button-group">
-                <button id="add-url-btn">Add URL</button>
-                <button id="remove-url-btn">Remove URL</button>
-                <button id="start-processing-btn">Start Processing</button>
-                <button id="view-urls-btn">View URLs</button>
+                <button id="start-btn" class="start_button">Start</button>
             </div>
-            <div id="response-message" class="message" style="display: none;"></div>
+            <div id="response-message" class="message" style="display: flex;margin-left: 15px;"></div>   
         </div>
 
         <!-- URLs List -->
@@ -71,6 +68,11 @@
                 <!-- URLs will be dynamically populated here -->
             </ul>
         </div>
+    </div>
+    <div class="bottom-container"> 
+            <label for="stream_name">Stream Name:</label> 
+            <input type="text" id="stream_name_remove" placeholder="Enter stream name" required>
+        <button id="remove-url-btn" class="remove_button">Remove URL</button>
     </div>
     <!-- Updated path to script.js -->
     <script src="{{ url_for('static', filename='js/script.js') }}"></script>

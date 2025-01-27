@@ -34,14 +34,14 @@ def wait_for_next_10_minute_interval():
     time.sleep(wait_time)
 
 @celery_app.task
-def process_all_urls(LUKLA_CONSTANTS):
+def process_all_urls(CONSTANTS):
     """
     Celery task to process all URLs from Redis and take screenshots every 10 minutes.
     """
     try:
         while True:
             # Wait for the next 10-minute interval to always start capturing from the 10 min interval gap
-            # wait_for_next_10_minute_interval()
+            wait_for_next_10_minute_interval()
             redis_client = get_redis_client()
 
             # Get all stream names and URLs from the Redis hash
@@ -58,31 +58,30 @@ def process_all_urls(LUKLA_CONSTANTS):
                     logger.info(f"Processing URL: {url}")
                     BASE_OUTPUT_DIR = f"./screenshots/"+stream_name
                     yt_handler = YoutubeHandler(url, BASE_OUTPUT_DIR)            
-                    img_path, capture_time = yt_handler.capture_screenshot()
-
+                    img_path, capture_time = yt_handler.capture_screenshot() 
                     img_handler = ImageHandler(img_path)
                     maker_note = img_handler.create_encoded_maker_note(
-                        device_id=LUKLA_CONSTANTS["device_id"],
-                        devicecode=LUKLA_CONSTANTS["devicecode"],
-                        album_code=LUKLA_CONSTANTS["album_code"],
-                        latitude=LUKLA_CONSTANTS["latitude"],
-                        longitude=LUKLA_CONSTANTS["longitude"],
-                        altitude=LUKLA_CONSTANTS["altitude"],
-                        imageowner=LUKLA_CONSTANTS["imageowner"],
+                        device_id=CONSTANTS["device_id"],
+                        devicecode=CONSTANTS["devicecode"],
+                        album_code=CONSTANTS["album_code"],
+                        latitude=CONSTANTS["latitude"],
+                        longitude=CONSTANTS["longitude"],
+                        altitude=CONSTANTS["altitude"],
+                        imageowner=CONSTANTS["imageowner"],
                         datetime_taken=capture_time,
                     )
 
                     # Add metadata and upload to FTP
                     file_name = img_handler.add_metadata_and_save(
                         maker_note,
-                        firstangle=LUKLA_CONSTANTS["firstAngle"],
-                        lastangle=LUKLA_CONSTANTS["lastAngle"],
+                        firstangle=CONSTANTS["firstAngle"],
+                        lastangle=CONSTANTS["lastAngle"],
                     )
-                    # img_handler.upload_to_ftp(file_to_upload=file_name)
+                    img_handler.upload_to_ftp(file_to_upload=file_name)
                     logger.info(f"BASE:{BASE_OUTPUT_DIR}")
                     logger.info(f"Successfully processed URL: {url}")
                 except Exception as e:
                     logger.error(f"Error processing URL {url}: {e}")
-            time.sleep(60*2)#wait 10 min
+            time.sleep(60*10)#wait 10 min
     except Exception as e:
         logger.error(f"Critical error in processing task: {e}")    

@@ -29,19 +29,19 @@ def get_urls():
         logger.error(f"Error in /get-urls: {e}")
         return jsonify({"message": "An error occurred while fetching URLs."}), 500
 
-@app.route("/add-url", methods=["POST"])
-def add_url():
-    """
-    Endpoint to add a new URL to the Redis queue.
-    """
-    data = request.get_json()
-    url = data.get("url")
-    stream_name = data.get("stream_name")
-    if url: 
-        redis_client.hset(STREAM_URLS_KEY, stream_name, url)
-        # redis_client.rpush(STREAM_URLS_KEY, url)
-        return jsonify({"message": f"URL {url} added successfully!"}), 201
-    return jsonify({"message": "URL is required!"}), 400
+# @app.route("/add-url", methods=["POST"])
+# def add_url():
+#     """
+#     Endpoint to add a new URL to the Redis queue.
+#     """
+#     data = request.get_json()
+#     url = data.get("url")
+#     stream_name = data.get("stream_name")
+#     if url: 
+#         redis_client.hset(STREAM_URLS_KEY, stream_name, url)
+#         # redis_client.rpush(STREAM_URLS_KEY, url)
+#         return jsonify({"message": f"URL {url} added successfully!"}), 201
+#     return jsonify({"message": "URL is required!"}), 400
 
 
 @app.route("/remove-url", methods=["POST"])
@@ -57,40 +57,55 @@ def remove_url():
         return jsonify({"message": f"Stream {stream_name} removed successfully!"}), 200
     return jsonify({"message": "stream_name is required!"}), 400
 
-@app.route("/start-processing", methods=["POST"])
-def start_processing():
+@app.route("/start", methods=["POST"])
+def start():
     """
     Start the Celery task to process URLs.
     """
     try:
-        # data=request.get_json()
-        # device_id=data['device_id']
-        # devicecode=data['devicecode']
-        # album_code=data['album_code']
-        # latitude=data['latitude']
-        # longitude=data['longitude']
-        # altitude=data['altitude']
-        # imageowner=data['imageowner']
-        # firstAngle=data['firstAngle']
-        # lastAngle=data['lastAngle']
-        # # -----FOR LUKLA----------
-        LUKLA_CONSTANTS = {
-            "device_id": 0,  # pick a random id
-            "devicecode": "yt_1",    
-            "album_code": "album1",
-            "latitude": 27.687162,
-            "longitude": 86.732396,
-            "altitude": 2800,
-            "imageowner": "aryan",
-            "firstAngle": 350,
-            "lastAngle":0,
+        data = request.get_json()
+        device_id=data.get('device_id')
+        devicecode = data.get('devicecode')
+        album_code = data.get('album_code')
+        latitude = data.get('latitude')
+        longitude = data.get('longitude')
+        altitude = data.get('altitude')
+        imageowner = data.get('imageowner')
+        firstAngle = data.get('firstAngle')
+        lastAngle = data.get('lastAngle')
+        url = data.get("url")
+        stream_name = data.get("stream_name")
+        if url: 
+            redis_client.hset(STREAM_URLS_KEY, stream_name, url)
+        # # # -----FOR LUKLA----------
+        # CONSTANTS = {
+        #     "device_id": 0,  # pick a random id
+        #     "devicecode": "yt_1",    
+        #     "album_code": "album1",
+        #     "latitude": 27.687162,
+        #     "longitude": 86.732396,
+        #     "altitude": 2800,
+        #     "imageowner": "aryan",
+        #     "firstAngle": 350,
+        #     "lastAngle":0,
+        # }
+        CONSTANTS = {
+            "device_id": int(device_id),  # pick a random id
+            "devicecode": str(devicecode),    
+            "album_code": str(album_code),
+            "latitude": float(latitude),
+            "longitude": float(longitude),
+            "altitude": float(altitude),
+            "imageowner": str(imageowner),
+            "firstAngle": int(firstAngle),
+            "lastAngle":int(lastAngle),
         }
 
         # BASE_OUTPUT_DIR = data.get("output_dir", "./screenshots")
         # LUKLA_CONSTANTS = data.get("lukla_constants", {})  # LUKLA_CONSTANTS can be dynamic too
         
         #args=[] to pass the dict as a pack and not open it
-        process_all_urls.apply_async(args=[LUKLA_CONSTANTS])  # Trigger the task in Celery
+        process_all_urls.apply_async(args=[CONSTANTS])  # Trigger the task in Celery
         return jsonify({"message": "Started processing URLs!"}), 200
     except Exception as e:
         # Log the error and return a 500 response

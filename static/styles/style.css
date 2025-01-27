@@ -1,3 +1,4 @@
+/* Main Styles */
 body {
     font-family: Arial, sans-serif;
     margin: 0;
@@ -6,17 +7,29 @@ body {
     color: #333;
 }
 
-.container {
-    max-width: 600px;
+.main-container {
+    display: flex;
+    justify-content: space-between;
+    gap: 20px;
+    align-items: flex-start;
+    max-width: 1500px;
     margin: 50px auto;
+}
+
+.container {
+    width: 65%; /* Main form width */
     background: #fff;
     padding: 20px;
     border-radius: 8px;
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    display: grid;
+    grid-template-columns: repeat(3, 1fr); /* Create 3 equal columns */
+    gap: 20px; /* Space between form fields */
 }
 
-h1 {
+.container h1 {
     text-align: center;
+    margin-bottom: 20px;
     color: #444;
 }
 
@@ -28,9 +41,10 @@ label {
     display: block;
     margin-bottom: 5px;
     font-weight: bold;
+    color: #555;
 }
 
-input[type="text"] {
+input[type="text"], input[type="number"], input[type="url"] {
     width: 100%;
     padding: 8px;
     border: 1px solid #ddd;
@@ -38,18 +52,54 @@ input[type="text"] {
     box-sizing: border-box;
 }
 
-button {
-    background-color: #5cb85c;
+.form-group {
+    display: flex;
+    flex-direction: column;
+}
+
+/* Align buttons in one row */
+.button-group {
+    display: flex;
+    justify-content: flex-end; /* Align buttons to the left */
+    margin-top: 20px;
+    width: 100%;
+}
+
+.start_button {
+    background-color: #007bff;
     color: white;
-    padding: 10px 15px;
+    justify-items: flex-end;
+    padding: 10px 20px;
+    margin-right: 70px;
     border: none;
     border-radius: 4px;
     cursor: pointer;
-    margin-right: 5px;
+    transition: background-color 0.3s ease;
+    width:150px;
 }
 
+.bottom-container {
+    display: grid;
+    justify-content: space-between;
+    gap: 20px;
+    align-items: flex-start;
+    max-width: 1500px;
+    margin: 50px auto;
+}
+.remove_button{
+    background-color: #007bff;
+    color: white;
+    justify-items: flex-end;
+    padding: 10px 20px;
+    margin-right: 70px;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+    width:150px;
+}
 button:hover {
-    background-color: #4cae4c;
+    background-color: #0056b3;
 }
 
 .message {
@@ -60,18 +110,35 @@ button:hover {
 }
 
 .message.success {
-    background-color: #dff0d8;
-    color: #3c763d;
+    background-color: #d4edda;
+    color: #155724;
 }
 
 .message.error {
-    background-color: #f2dede;
-    color: #a94442;
+    background-color: #f8d7da;
+    color: #721c24;
+}
+
+.urls-container {
+    width: 30%;
+    background: #fff;
+    padding: 20px;
+    border-radius: 8px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    text-align: left;
+    
+}
+
+.urls-container h2 {
+    text-align: center;
+    margin-bottom: 15px;
+    color: #444;
 }
 
 .list-group {
     list-style: none;
     padding: 0;
+    margin-top: 10px;
 }
 
 .list-group-item {
@@ -82,30 +149,23 @@ button:hover {
     margin-bottom: 5px;
 }
 
-.button-group {
-    text-align: center;
-}
+/* Responsive Design */
+@media (max-width: 768px) {
+    .main-container {
+        flex-direction: column;
+        gap: 20px;
+    }
 
+    .container, .urls-container {
+        width: 100%;
+    }
 
- /* Additional styles for layout */
- .main-container {
-    display: flex;
-    justify-content: space-between;
-    gap: 20px;
-    align-items: flex-start;
-    max-width: 1200px;
-    margin: 50px auto;
-}
+    .button-group {
+        justify-content: center; /* Center buttons on smaller screens */
+    }
 
-.urls-container {
-    width: 35%;
-    background: #fff;
-    padding: 20px;
-    border-radius: 8px;
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-}
-
-.urls-container h2 {
-    margin-top: 0;
-    text-align: center;
+    /* Stack form fields vertically on smaller screens */
+    .container {
+        grid-template-columns: 1fr; /* Stack them in one column */
+    }
 }
